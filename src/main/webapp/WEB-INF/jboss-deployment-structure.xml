@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jboss-deployment-structure>
+    <deployment>
+        <!-- Exclusions allow you to prevent the server from automatically adding some dependencies -->
+        <!-- 主要作用就是将应用的日志输出到自己设定目录，而不是输出到wildfly的server.log里面 -->
+        <exclusions>
+            <module name="org.slf4j" />
+            <module name="org.slf4j.impl" />
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>

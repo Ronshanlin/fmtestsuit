@@ -1,7 +1,7 @@
 /*
- * Copyright (C), 2002-2015, 苏宁易购电子商务有限公司
+ * Copyright (C), 2013-2020, shanlin demo
  * FileName: Contants.java
- * Author:   13073457
+ * Author:   shanlin
  * Date:     2015-11-4 下午3:47:42
  * Description: //模块目的、功能描述      
  * History: //修改记录
@@ -13,7 +13,7 @@ package com.shanlin.demo.utils;
 /**
  * 常量类<br> 
  *
- * @author 13073457
+ * @author shanlin
  */
 public abstract class Constants {
     public static final String USER_DIR = System.getProperty("user.dir")+"\\dynamic";

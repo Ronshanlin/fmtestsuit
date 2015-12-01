@@ -57,7 +57,7 @@ public class SvntreeController {
         compileBo.setSvnBranch(httpUrl);
         compileBo.setSvnUser(username);
         compileBo.setSvnPassword(passpord);
-        compileBo.setSystemCode("geep");
+        compileBo.setSystemCode("");
         List<String> paths = new ArrayList<String>();
         paths.add("");
         compileBo.setJavaPaths(paths);

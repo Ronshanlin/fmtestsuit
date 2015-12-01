@@ -31,7 +31,7 @@ public class SpringXmlParser{
     /**
      * 〈一句话功能简述〉<br> 
      *
-     * @author 13073457
+     * @author shanlin
      */
     private class XmlBeanFactory extends DefaultListableBeanFactory {
 

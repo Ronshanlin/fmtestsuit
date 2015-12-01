@@ -1,7 +1,7 @@
 /*
- * Copyright (C), 2002-2015, 苏宁易购电子商务有限公司
+ * Copyright (C), 2013-2020, shanlin demo
  * FileName: DynamicLoader.java
- * Author:   13073457
+ * Author:   shanlin
  * Date:     2015-11-8 下午3:07:40
  * Description: //模块目的、功能描述      
  * History: //修改记录

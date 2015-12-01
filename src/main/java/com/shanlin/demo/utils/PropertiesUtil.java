@@ -1,7 +1,7 @@
 /*
- * Copyright (C), 2002-2015, 苏宁易购电子商务有限公司
+ * Copyright (C), 2013-2020, shanlin demo
  * FileName: PropertiesUtil.java
- * Author:   13073457
+ * Author:   shanlin
  * Date:     2015-11-16 上午11:56:16
  * Description: //模块目的、功能描述      
  * History: //修改记录
@@ -22,7 +22,7 @@ import org.springframework.core.io.Resource;
 /**
  * properties工具<br> 
  *
- * @author 13073457
+ * @author shanlin
  */
 public class PropertiesUtil {
     private PropertiesUtil(){}

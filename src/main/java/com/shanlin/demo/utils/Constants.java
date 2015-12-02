@@ -23,4 +23,8 @@ public abstract class Constants {
     public static final String CONF_PATH = USER_DIR+"\\resources";
     
     public static final long EXPIRE_TIME=5*24*60*60L;
+    
+    public static final String CACHE_USER_PWD="user:pwd:{0}";
+    
+    public static final String LOGIN_URL="/login";
 }

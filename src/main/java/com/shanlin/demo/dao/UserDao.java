@@ -1,16 +1,15 @@
 package com.shanlin.demo.dao;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.shanlin.demo.entity.SystemEntity;
-import com.shanlin.demo.utils.Constants;
+import com.shanlin.demo.entity.UserEntity;
 
 @Repository
 public class UserDao {
@@ -29,14 +28,37 @@ public class UserDao {
      * @param expire 过期时间，单位秒
      */
     public void saveUser(String userNo, String pwd, long expire){
-        if (expire<1) {
-            expire = Constants.EXPIRE_TIME;
-        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
         String sql = "insert into user " +
         		"(user_no,user_password, create_time, pwd_expire)" +
         		"values" +
-        		"(:userNo,:pwd, curDate(), :expire)";
+        		"(:userNo,:pwd, :creatTime, :expire)";
+        
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("userNo", userNo);
+        paramMap.put("pwd", pwd);
+        paramMap.put("expire", expire);
+        paramMap.put("creatTime", format.format(new Date()));
+        
+        template.update(sql, paramMap);
+    }
+    
+    public UserEntity queryUser(String userNo){
+        String sql = "select user_no, user_password, pwd_expire from user where user_no=:userNo";
+        
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("userNo", userNo);
+        
+        return template.queryForObject(sql, paramMap, UserEntity.class);
+    }
+    
+    public void updatePwd(String userNo, String pwd, long expire){
+        String sql = "update user " +
+                "set " +
+                "user_password=:pwd,pwd_expire=:expire " +
+                "where " +
+                "user_no=:userNo";
         
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userNo", userNo);

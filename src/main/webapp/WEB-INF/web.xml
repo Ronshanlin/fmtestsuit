@@ -31,6 +31,15 @@
 		<filter-name>CharacterEncodingFilter</filter-name>
 		<servlet-name>freemaker-test-suit</servlet-name>
 	</filter-mapping>
+	
+	<filter>
+		<filter-name>loginFilter</filter-name>
+		<filter-class>com.shanlin.demo.filter.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>loginFilter</filter-name>
+		<servlet-name>freemaker-test-suit</servlet-name>
+	</filter-mapping>
  
 	<servlet>
 		<servlet-name>freemaker-test-suit</servlet-name>

@@ -49,8 +49,8 @@ public class CompileServiceImpl implements CompileService {
         String key = compileBo.getSystemCode();
         String field = "freemarkerConfig";
         
-        if (compileBo.getRefresh() && cache.exist(key, field)) {
-            return (Configuration)cache.get(key, field);
+        if (compileBo.getRefresh() && cache.hexist(key, field)) {
+            return (Configuration)cache.hget(key, field);
         }
         
         // 获取spring xml路径
@@ -74,7 +74,7 @@ public class CompileServiceImpl implements CompileService {
         SpringXmlParser builder = SpringXmlParser.getInstance(confPath);
         Configuration fmConfig = builder.getBean(FreeMarkerConfigurationFactoryBean.class).getObject();
         
-        cache.put(key, field, fmConfig);
+        cache.hset(key, field, fmConfig);
         
         if (out!=null) {
             out.close();
@@ -88,8 +88,8 @@ public class CompileServiceImpl implements CompileService {
         String key = compileBo.getSystemCode();
         String field = compileBo.getPropertiesPath();
         
-        if (compileBo.getRefresh() && cache.exist(key, field)) {
-            return (Properties)cache.get(key, field);
+        if (compileBo.getRefresh() && cache.hexist(key, field)) {
+            return (Properties)cache.hget(key, field);
         }
         
         // 替换变量
@@ -102,7 +102,7 @@ public class CompileServiceImpl implements CompileService {
         // 转为properties文件
         Properties mainSetting = PropertiesUtil.getProps(new ByteArrayInputStream(writer.toString().getBytes()));
         
-        cache.put(key, field, mainSetting);
+        cache.hset(key, field, mainSetting);
         
         return mainSetting;
     }
@@ -114,8 +114,8 @@ public class CompileServiceImpl implements CompileService {
      */
     private Properties loadVars(CompileBo compileBo){
         String key = compileBo.getSystemCode();
-        if (compileBo.getRefresh() && cache.exist(key, compileBo.getVarsPath())) {
-            return (Properties)cache.get(key, compileBo.getVarsPath());
+        if (compileBo.getRefresh() && cache.hexist(key, compileBo.getVarsPath())) {
+            return (Properties)cache.hget(key, compileBo.getVarsPath());
         }
         
         
@@ -128,7 +128,7 @@ public class CompileServiceImpl implements CompileService {
         }
         
         Properties varsProp = PropertiesUtil.getProps(new ByteArrayInputStream(out.toByteArray()));
-        cache.put(compileBo.getSystemCode(), compileBo.getVarsPath(),varsProp);
+        cache.hset(compileBo.getSystemCode(), compileBo.getVarsPath(),varsProp);
         
         if (out!=null) {
             try {

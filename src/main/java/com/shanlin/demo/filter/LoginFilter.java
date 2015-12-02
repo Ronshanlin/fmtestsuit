@@ -11,8 +11,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class LoginFilter implements Filter {
+import com.shanlin.demo.utils.Constants;
 
+public class LoginFilter implements Filter {
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do
@@ -25,9 +27,17 @@ public class LoginFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpServletResponse response = (HttpServletResponse)sresponse;
         
+        String contextPath = request.getContextPath();
+        String url = request.getRequestURI().replace(contextPath, "");
+        if(url.startsWith(Constants.LOGIN_URL)){
+            chain.doFilter(servletRequest, sresponse);
+            return;
+        }
+        
         String userNo=(String) request.getSession().getAttribute("userNo");
         if (userNo==null) {
-            response.sendRedirect("/login.htm");
+            response.sendRedirect(contextPath+"/login");
+            
             return;
         }
         

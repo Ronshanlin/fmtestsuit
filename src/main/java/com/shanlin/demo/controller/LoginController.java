@@ -6,13 +6,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.shanlin.demo.service.UserService;
+
 @Controller
 public class LoginController extends BaseController {
+    
+    @Autowired
+    private UserService userService;
 
     @RequestMapping("/login")
     public String login(Model model, String targetUrl) {
@@ -28,6 +34,16 @@ public class LoginController extends BaseController {
         if (StringUtils.isEmpty(userNo) || StringUtils.isEmpty(pwd)) {
             jsonMap.put("code", "1");
             jsonMap.put("msg", "用户名或密码不可为空");
+            ajaxJson(response, jsonMap);
+            return;
+        }
+        // 保存用户
+        try {
+            userService.saveUser(userNo, pwd, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jsonMap.put("code", "1");
+            jsonMap.put("msg", "登录失败！");
             ajaxJson(response, jsonMap);
             return;
         }

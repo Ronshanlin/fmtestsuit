@@ -7,19 +7,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 import com.shanlin.demo.bean.CompileBo;
+import com.shanlin.demo.dao.SystemConfigDao;
+import com.shanlin.demo.entity.SysConfEntity;
 import com.shanlin.demo.helper.DynamicLoader;
 import com.shanlin.demo.helper.JavaCompilerUtil;
 import com.shanlin.demo.helper.SpringXmlParser;
 import com.shanlin.demo.helper.Svnkit;
 import com.shanlin.demo.helper.cache.CacheFactory;
 import com.shanlin.demo.helper.cache.CacheInterface;
-import com.shanlin.demo.helper.cache.CacheType;
 import com.shanlin.demo.service.CompileService;
 import com.shanlin.demo.utils.Constants;
 import com.shanlin.demo.utils.PropertiesUtil;
@@ -30,18 +36,94 @@ import freemarker.template.Configuration;
 @Service
 public class CompileServiceImpl implements CompileService {
 
-    private CacheInterface cache = CacheFactory.getCacheBean(CacheType.MAP);
+    private CacheInterface cache = CacheFactory.getCacheBean();
+    
+    @Autowired
+    private SystemConfigDao configDao;
     
     @Override
+    @Transactional
     public void load(CompileBo compileBo) throws Exception {
+        // 保存配置数据
+        this.saveSysConf(compileBo);
         // 加载类
         this.loadClass(compileBo);
         // 获取环境变量
         Properties varsProp = this.loadVars(compileBo);
         // 获取properties文件
         Properties settings = this.loadSettings(compileBo, varsProp);
-        // 获取freemarker config
-        Configuration configuration = this.loadSpring(compileBo, varsProp, settings);
+        // 加载freemarker config
+        this.loadSpring(compileBo, varsProp, settings);
+    }
+    
+    public void reLoad(String sysCode, String userNo) throws Exception{
+        CompileBo compileBo = new CompileBo();
+        compileBo.setJavaPaths(configDao.getSysConfs(sysCode, SysConfType.JAVA));
+        compileBo.setSvnBranch(configDao.getSysConfs(sysCode, SysConfType.SVNBRANCH).get(0));
+        compileBo.setPropertiesPath(configDao.getSysConfs(sysCode, SysConfType.PROPERTIES).get(0));
+        compileBo.setSpringPath(configDao.getSysConfs(sysCode, SysConfType.VARS_PROPS).get(0));
+        compileBo.setVarsPath(configDao.getSysConfs(sysCode, SysConfType.XML).get(0));
+        compileBo.setSvnUser(userNo);
+        
+        String key = MessageFormat.format(Constants.CACHE_USER_PWD, "");
+        String pwd = (String) cache.get(key);
+        compileBo.setSvnPassword(pwd);
+        compileBo.setSystemCode(sysCode);
+        
+        // 加载类
+        this.loadClass(compileBo);
+        // 获取环境变量
+        Properties varsProp = this.loadVars(compileBo);
+        // 获取properties文件
+        Properties settings = this.loadSettings(compileBo, varsProp);
+        // 加载freemarker config
+        this.loadSpring(compileBo, varsProp, settings);
+    };
+    
+    /**
+     * 功能描述: 保存系统配置<br>
+     *
+     * @param compileBo
+     */
+    public void saveSysConf(CompileBo compileBo){
+        String system = compileBo.getSystemCode();
+        
+        List<SysConfEntity> sysConfEntities = new ArrayList<SysConfEntity>();
+        SysConfEntity propsEntity = new SysConfEntity();
+        propsEntity.setSysCode(system);
+        propsEntity.setSysConfCode(SysConfType.PROPERTIES.getValue());
+        propsEntity.setSysConfName(compileBo.getPropertiesPath());
+        
+        SysConfEntity svnEntity = new SysConfEntity();
+        svnEntity.setSysCode(system);
+        svnEntity.setSysConfCode(SysConfType.SVNBRANCH.getValue());
+        svnEntity.setSysConfName(compileBo.getSvnBranch());
+        
+        SysConfEntity xmlEntity = new SysConfEntity();
+        xmlEntity.setSysCode(system);
+        xmlEntity.setSysConfCode(SysConfType.XML.getValue());
+        xmlEntity.setSysConfName(compileBo.getSpringPath());
+        
+        SysConfEntity varsEntity = new SysConfEntity();
+        varsEntity.setSysCode(system);
+        varsEntity.setSysConfCode(SysConfType.VARS_PROPS.getValue());
+        varsEntity.setSysConfName(compileBo.getVarsPath());
+        
+        sysConfEntities.add(propsEntity);
+        sysConfEntities.add(xmlEntity);
+        sysConfEntities.add(varsEntity);
+        
+        SysConfEntity javaEntity = null;
+        for (String path : compileBo.getJavaPaths()) {
+            javaEntity = new SysConfEntity();
+            javaEntity.setSysCode(system);
+            javaEntity.setSysConfCode(SysConfType.JAVA.getValue());
+            javaEntity.setSysConfName(path);
+            
+            sysConfEntities.add(javaEntity);
+        }
+        
+        configDao.batchSaveSystemConf(sysConfEntities);
     }
     
     private Configuration loadSpring(CompileBo compileBo, Properties varsProp, Properties settings)

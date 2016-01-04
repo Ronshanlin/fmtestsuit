@@ -1,13 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>login</title>
+	<title>选择系统</title>
 	<#include "common/common.ftl" />
     <script type="text/javascript">
         $(function(){
 			$("#submit").linkbutton({
  				onClick: function(){
- 					sumbmit();
+ 					login.check(function(){
+ 						sumbmit();
+ 					});
  				}
  			});
         });
@@ -43,9 +45,6 @@
 							<option value="${sys.sysCode}">${sys.sysCode}(${sys.sysName})</option>
 						</#list>
 						</#if>
-						    <option value="aa">aitem1</option>
-						    <option>bitem2</option>
-						    <option>....</option>
 						</select>
 					</td>
 	            </tr>

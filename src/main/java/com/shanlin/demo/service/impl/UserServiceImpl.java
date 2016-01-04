@@ -9,7 +9,6 @@ import com.shanlin.demo.dao.UserDao;
 import com.shanlin.demo.entity.UserEntity;
 import com.shanlin.demo.helper.cache.CacheFactory;
 import com.shanlin.demo.helper.cache.CacheInterface;
-import com.shanlin.demo.helper.cache.CacheType;
 import com.shanlin.demo.service.UserService;
 import com.shanlin.demo.utils.Constants;
 
@@ -19,7 +18,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
     
-    private CacheInterface cache = CacheFactory.getCacheBean(CacheType.MAP);
+    private CacheInterface cache = CacheFactory.getCacheBean();
     
     @Override
     public void saveUser(String userNo, String pwd, long expire) {

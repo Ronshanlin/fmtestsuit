@@ -5,20 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.shanlin.demo.entity.UserEntity;
 
 @Repository
-public class UserDao {
-    
-    @Autowired
-    private NamedParameterJdbcTemplate template;
-    
-    @Autowired
-    private BaseDao baseDao;
+public class UserDao extends BaseDao{
     
     /**
      * 功能描述: 保存用户<br>
@@ -45,12 +37,13 @@ public class UserDao {
     }
     
     public UserEntity queryUser(String userNo){
-        String sql = "select user_no, user_password, pwd_expire from user where user_no=:userNo";
+        String sql = "select user_no, user_password as pwd, pwd_expire as expire " +
+        		"from user where user_no=:userNo";
         
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userNo", userNo);
         
-        return template.queryForObject(sql, paramMap, UserEntity.class);
+        return super.queryForObject(sql, paramMap, UserEntity.class);
     }
     
     public void updatePwd(String userNo, String pwd, long expire){

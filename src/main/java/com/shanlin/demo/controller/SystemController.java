@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.shanlin.demo.bean.Response;
 import com.shanlin.demo.service.SystemService;
 
 @Controller
@@ -31,10 +32,37 @@ public class SystemController extends BaseController{
         return "system/sys-add-show.ftl";
     }
     
+    /**
+     * 功能描述: 添加系统，逻辑如下：<br>
+     *  1. 
+     *
+     * @param request
+     * @param response
+     * @param sysCode
+     * @param sysName
+     */
     @RequestMapping("/add/do")
-    public void add(HttpServletResponse response, String sysCode, String sysName){
+    public void add(HttpServletRequest request, HttpServletResponse response, String sysCode, String sysName){
         
-        systemService.saveSystem(sysCode, sysName);
+        try {
+            // 保存系统
+            Response<String> serviceResponse = systemService.saveSystem(sysCode, sysName);
+            if (!serviceResponse.isSuccess()) {
+                ajaxJson(response, serviceResponse.getMsg());
+            }
+            
+            String usr = (String) request.getSession().getAttribute("userNo");
+            // set sys_usr_rel
+            systemService.setSysUsrRel(usr, sysCode);
+            
+            String sys = (String) request.getSession().getAttribute("sysCode");
+            if (sys==null) {
+                super.setSession(request, "sysCode", sysCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ajaxJson(response, "exption"+e.getMessage());
+        }
         
         ajaxJson(response, "success");
     }
@@ -44,16 +72,15 @@ public class SystemController extends BaseController{
             String sysCode){
         
         String usr = (String) request.getSession().getAttribute("userNo");
-        
-        //TODO set sys_usr_rel
+        // set sys_usr_rel
+        systemService.setSysUsrRel(usr, sysCode);
         
         String sys = (String) request.getSession().getAttribute("sysCode");
         if (sys==null) {
-            request.getSession().setAttribute("sysCode", sysCode);
+            super.setSession(request, "sysCode", sysCode);
         }
         
         ajaxJson(response, "success");
-        
     }
     
     @RequestMapping(value="/update", method=RequestMethod.POST)
@@ -61,6 +88,7 @@ public class SystemController extends BaseController{
         // 删除当前系统
         request.getSession().removeAttribute("sysCode");
         
+        // 返回到系统列表
         return this.list(model);
     }
 }

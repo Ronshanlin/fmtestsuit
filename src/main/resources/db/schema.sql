@@ -1,3 +1,10 @@
+drop table system if exists;
+drop table user if exists;
+drop table system_user_rel if exists;
+drop table system_conf if exists;
+drop table system_conf_vals if exists;
+drop table system_svn_tree if exists;
+
 create table system (
     id int not null IDENTITY,
     sys_code varchar(20),
@@ -21,11 +28,11 @@ create table system_user_rel(
 create table system_conf (
 	sys_code varchar(20),
 	sys_conf_code varchar(50),
-	sys_conf_path varchar(512)
+	sys_conf_name varchar(512)
 );
 
 create table system_conf_vals (
-	sys_conf_path varchar(120),
+	sys_conf_code varchar(120),
 	sys_conf_key varchar(80),
 	sys_conf_val varchar(100)
 );

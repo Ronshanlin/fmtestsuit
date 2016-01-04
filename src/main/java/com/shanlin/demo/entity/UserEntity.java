@@ -4,6 +4,7 @@ public class UserEntity {
     private String userNo;
     private String pwd;
     private long expire;
+    
     public String getUserNo() {
         return userNo;
     }

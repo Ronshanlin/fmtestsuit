@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.shanlin.demo.service.UserService;
 
@@ -21,9 +23,22 @@ public class LoginController extends BaseController {
     private UserService userService;
 
     @RequestMapping("/login")
-    public String login(Model model, String targetUrl) {
-        model.addAttribute("targetUrl", targetUrl);
-        return "login.ftl";
+    public ModelAndView login(Model model, HttpServletRequest request, String targetUrl) {
+        ModelAndView mav = new ModelAndView("login.ftl");
+        
+        String usr = (String)request.getSession().getAttribute("userNo");
+        if (usr == null) {
+            model.addAttribute("targetUrl", targetUrl);
+            return mav;
+        }
+        
+        if (StringUtils.isEmpty(targetUrl)) {
+            mav.setView(new RedirectView("index", true));
+        }else {
+            mav.setView(new RedirectView(targetUrl));
+        }
+        
+        return mav;
     }
 
     @RequestMapping("/login/confirm")
@@ -53,5 +68,16 @@ public class LoginController extends BaseController {
         
         jsonMap.put("code", "0");
         ajaxJson(response, jsonMap);
+    }
+    
+    @RequestMapping("/login/check")
+    public void isLogin(HttpServletRequest request, HttpServletResponse response){
+        String usr = (String)request.getSession().getAttribute("userNo");
+        if (usr == null) {
+            ajaxJson(response, "false");
+            return;
+        }
+        
+        ajaxJson(response, usr);
     }
 }

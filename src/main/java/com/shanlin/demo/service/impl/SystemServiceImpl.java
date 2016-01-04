@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.shanlin.demo.bean.Response;
 import com.shanlin.demo.dao.SystemDao;
 import com.shanlin.demo.entity.SystemEntity;
 import com.shanlin.demo.service.SystemService;
@@ -25,19 +26,32 @@ public class SystemServiceImpl implements SystemService{
     public void setSysUsrRel(String userNo, String sysCode) {
         boolean isExist = systemDao.isExistSysUserRel(userNo, sysCode);
         
-        if (isExist) {
+        // 如果不存在，则添加关系
+        if (!isExist) {
             systemDao.setSysUsrRel(userNo, sysCode);
         }
     }
 
     @Override
-    public void saveSystem(String sysCode, String sysName) {
+    public Response<String> saveSystem(String sysCode, String sysName) {
+        Response<String> response = new Response<String>();
+        
         if (StringUtils.isEmpty(sysCode) || StringUtils.isEmpty(sysName)) {
-            return;
+            response.setSuccess(false);
+            response.setMsg("系统编码或系统名称为空！");
+            return response;
         }
         
         String code = sysCode.toUpperCase();
         
+        SystemEntity entity = systemDao.querySystem(sysCode);
+        if (entity!=null) {
+            response.setSuccess(false);
+            response.setMsg("该系统已存在！");
+        }
+        
         systemDao.saveSystem(code, sysName);
+        
+        return response;
     }
 }

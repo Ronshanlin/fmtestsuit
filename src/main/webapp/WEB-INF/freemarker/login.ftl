@@ -3,39 +3,6 @@
 <head>
 	<title>login</title>
 	<#include "common/common.ftl" />
-    <script type="text/javascript">
-        $(function(){
-			$("#submit").linkbutton({
- 				onClick: function(){
- 					sumbmit();
- 				}
- 			});
-        });
-        function sumbmit(){
-        	$("#form").form('submit',{
-        		url:'${sysDomain}/login/confirm',
-        		onSubmit: function(){
-        			var isValid = $(this).form('validate');
-					return isValid;
-        		},
-        		success:function(data){
-        			var result=eval("("+data+")");
-					if(result.msg){
-						$("#dlg").dialog({content:result.msg});
-						$("#dlg").dialog('open');
-						return;
-					}
-					
-					var url=$('#targetUrl').val();
-					if(url){
-						window.location.href=url;
-					} else{
-						window.location.href="${sysDomain}/index";
-					}
-        		}
-        	});
-        }
-    </script>
 </head> 
 <body>
 <center>

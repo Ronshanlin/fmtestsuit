@@ -12,12 +12,29 @@ import org.springframework.stereotype.Repository;
 public class BaseDao {
     
     @Autowired
-    private NamedParameterJdbcTemplate template;
+    protected NamedParameterJdbcTemplate template;
     
-    public <T> List<T> queryForList(String sql, Map<String, Object> paramMap, Class<T> requiredType){
+    protected <T> List<T> queryForList(String sql, Map<String, Object> paramMap, Class<T> requiredType){
         if (paramMap==null) {
             paramMap = new HashMap<String, Object>();
         }
         return template.query(sql, paramMap, new RowMapperFactory<T>(requiredType).getRowMapper());
+    }
+    
+    protected <T> T queryForObject(String sql, Map<String, Object> paramMap, Class<T> requiredType){
+        if (paramMap==null) {
+            paramMap = new HashMap<String, Object>();
+        }
+        List<T> results = template.query(sql, paramMap, new RowMapperFactory<T>(requiredType).getRowMapper());
+        
+        return this.singleResult(results);
+    }
+    
+    private <T> T singleResult(List<T> results){
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+        
+        return results.iterator().next();
     }
 }

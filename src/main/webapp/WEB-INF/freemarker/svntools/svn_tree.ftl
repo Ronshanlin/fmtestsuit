@@ -3,7 +3,7 @@
 <head>
 	<title>keep it simple!</title>
 	<#include "common/common.ftl" />
-    <script type="text/javascript" src="${scriptHost}/statics/svn-tree.js"></script>
+    <script type="text/javascript" src="${scriptHost}/statics/js/svn-tree.js"></script>
     <script>
     	var globalVars={
     		idx:1,

@@ -22,8 +22,6 @@ public class HomeController {
     public ModelAndView index(HttpServletRequest request){
         ModelAndView mav = new ModelAndView("");
         
-        
-        
         return null;
     }
 }

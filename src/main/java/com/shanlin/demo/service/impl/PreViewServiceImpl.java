@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,6 +22,7 @@ import com.shanlin.demo.utils.Constants;
 
 import freemarker.template.Configuration;
 
+@Service
 public class PreViewServiceImpl implements PreViewService {
     private CacheInterface cache = CacheFactory.getCacheBean();
     private Gson gson = new GsonBuilder().create();

@@ -20,7 +20,21 @@ public class SystemConfigDao extends BaseDao{
         		"(:sysCode,:sysConfCode,:sysConfName)";
         
         Map<String, String> paramMap = new HashMap<String, String>();
-        paramMap.put("sysCode", sysCode);
+        paramMap.put("sysCode", sysCode.toUpperCase());
+        paramMap.put("sysConfCode", sysConfCode);
+        paramMap.put("sysConfName", sysConfName);
+        
+        template.update(sql, paramMap);
+    }
+    
+    public void updateSystemConf(String sysCode, String sysConfCode, String sysConfName){
+        String sql = "update system_conf" +
+                "set " +
+                "sys_conf_name:sysConfName"+
+                "where sys_code=:sysCode,sys_conf_code=:sysConfCode";
+        
+        Map<String, String> paramMap = new HashMap<String, String>();
+        paramMap.put("sysCode", sysCode.toUpperCase());
         paramMap.put("sysConfCode", sysConfCode);
         paramMap.put("sysConfName", sysConfName);
         
@@ -44,7 +58,7 @@ public class SystemConfigDao extends BaseDao{
         int i = 0;
         for (SysConfEntity entity : entities) {
             paramMap = new HashMap<String, String>();
-            paramMap.put("sysCode", entity.getSysCode());
+            paramMap.put("sysCode", entity.getSysCode().toUpperCase());
             paramMap.put("sysConfCode", entity.getSysConfCode());
             paramMap.put("sysConfName", entity.getSysConfName());
             
@@ -84,12 +98,12 @@ public class SystemConfigDao extends BaseDao{
      * @return
      */
     public List<String> getSysConfs(String sysCode, SysConfType sysConfType){
-        String sql = "sys_conf_name" +
-        		"from system_conf" +
-        		"where sys_code:sysCode";
+        String sql = "select sys_conf_name " +
+        		"from system_conf " +
+        		"where sys_code=:sysCode and sys_conf_code=:sysConfCode";
         
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("sysCode", sysCode);
+        paramMap.put("sysCode", sysCode.toUpperCase());
         paramMap.put("sysConfCode", sysConfType.getValue());
         
         return super.queryForList(sql, paramMap, String.class);

@@ -1,8 +1,11 @@
 package com.shanlin.demo.service;
 
 import com.shanlin.demo.bean.CompileBo;
+import com.shanlin.demo.bean.Response;
+import com.shanlin.demo.bean.SvnNode;
 
 public interface CompileService {
+    public Response<SvnNode> getSvnTree(String userNo, String sysCode);
     
     public void load(CompileBo compileBo) throws Exception;
     

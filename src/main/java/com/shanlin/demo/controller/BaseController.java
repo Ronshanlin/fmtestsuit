@@ -5,10 +5,21 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.shanlin.demo.utils.JsonUtil;
 
 public class BaseController {
     
+    @ExceptionHandler(Exception.class)
+    public ModelAndView exceptionHandler(Exception e){
+        ModelAndView mav = new ModelAndView("error.ftl");
+        mav.addObject("msg", "出错了！囧");
+        e.printStackTrace();
+        
+        return mav;
+    }
     
     protected void ajaxJson(HttpServletResponse response, Object obj){
         try {
@@ -33,5 +44,9 @@ public class BaseController {
     protected void setSession(HttpServletRequest request, String key, String value){
         request.getSession().setAttribute(key, value);
         request.getSession().setMaxInactiveInterval(7200);
+    }
+    
+    protected String getUserNo(HttpServletRequest request){
+        return (String) request.getSession().getAttribute("userNo");
     }
 }

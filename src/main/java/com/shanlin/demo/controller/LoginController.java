@@ -26,7 +26,7 @@ public class LoginController extends BaseController {
     public ModelAndView login(Model model, HttpServletRequest request, String targetUrl) {
         ModelAndView mav = new ModelAndView("login.ftl");
         
-        String usr = (String)request.getSession().getAttribute("userNo");
+        String usr = super.getUserNo(request);
         if (usr == null) {
             model.addAttribute("targetUrl", targetUrl);
             return mav;

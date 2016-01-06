@@ -1,6 +1,7 @@
 package com.shanlin.demo.filter;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,14 +30,16 @@ public class LoginFilter implements Filter {
         
         String contextPath = request.getContextPath();
         String url = request.getRequestURI().replace(contextPath, "");
-        if(url.startsWith(Constants.LOGIN_URL)){
+        if(url.startsWith(Constants.LOGIN_URL) || url.equals(Constants.INDEX_URL)){
             chain.doFilter(servletRequest, sresponse);
             return;
         }
         
         String userNo=(String) request.getSession().getAttribute("userNo");
         if (userNo==null) {
-            response.sendRedirect(contextPath+"/login");
+            String targetUrl = "http://"+request.getServerName()+":"+request.getServerPort()+contextPath+url;
+            targetUrl = URLEncoder.encode(targetUrl,"utf-8");
+            response.sendRedirect(contextPath+"/login?targetUrl="+targetUrl);
             
             return;
         }

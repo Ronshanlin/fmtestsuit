@@ -8,41 +8,84 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.shanlin.demo.bean.CompileBo;
+import com.shanlin.demo.bean.Response;
 import com.shanlin.demo.bean.SvnNode;
 import com.shanlin.demo.helper.Svnkit;
 import com.shanlin.demo.service.CompileService;
-import com.shanlin.demo.utils.ClassPathUtil;
-import com.shanlin.demo.utils.Constants;
+import com.shanlin.demo.service.SystemService;
 
 import freemarker.template.Template;
 
 @Controller
 @RequestMapping("svn")
-public class SvntreeController {
+public class SvntreeController extends BaseController{
     
     @Autowired
-    CompileService compileService;
+    private CompileService compileService;
+    
+    @Autowired
+    private SystemService systemService;
+    
+    
+    @RequestMapping("/add/show/{sysCode}")
+    public ModelAndView addSvnBranch(HttpServletRequest request,
+            @PathVariable("sysCode") String sysCode){
+        ModelAndView mav = new ModelAndView("system/sys-svn-add-show.ftl");
+        
+        mav.getModel().put("sysCode", sysCode);
+        return mav;
+    }
+    
+    /**
+     * 功能描述: 添加svn分支<br>
+     *
+     * @param request
+     * @param response
+     * @param sysCode
+     * @param branch
+     */
+    @RequestMapping("/add/do")
+    public void add(HttpServletRequest request, HttpServletResponse response, String sysCode, String branch){
+        
+        try {
+            // 保存系统
+            Response<String> serviceResponse = systemService.updateSvnBranch(sysCode, branch);
+            if (!serviceResponse.isSuccess()) {
+                ajaxJson(response, serviceResponse.getMsg());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ajaxJson(response, "exption:"+e.getMessage());
+        }
+        
+        ajaxJson(response, "success");
+    }
     
     @RequestMapping("tree")
-    public String showTree(Model model,String httpUrl,String username, String passpord){
-        httpUrl = "";
-        username="";
-        passpord = "";
-        SvnNode node = Svnkit.getSvnRepository(httpUrl, username, passpord,"");
+    public String showTree(Model model, HttpServletRequest request, String httpUrl, 
+            String sysCode) {
+
+        String userNo=super.getUserNo(request);
         
-        model.addAttribute("svnNode", node);
+        Response<SvnNode> resp = compileService.getSvnTree(userNo, sysCode);
         
-        System.out.println(ClassPathUtil.getClassPath());
-        System.out.println(Constants.USER_DIR);
+        if (!resp.isSuccess()) {
+            model.addAttribute("msg", resp.getMsg());
+            return "error.ftl";
+        }
         
+        model.addAttribute("svnNode", resp.getObj());
         return "svntools/svn_tree.ftl";
     }
     

@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
+import org.springframework.util.StringUtils;
 
 import com.shanlin.demo.bean.CompileBo;
+import com.shanlin.demo.bean.Response;
+import com.shanlin.demo.bean.SvnNode;
 import com.shanlin.demo.dao.SystemConfigDao;
 import com.shanlin.demo.entity.SysConfEntity;
 import com.shanlin.demo.helper.DynamicLoader;
@@ -40,6 +43,35 @@ public class CompileServiceImpl implements CompileService {
     
     @Autowired
     private SystemConfigDao configDao;
+    
+    public Response<SvnNode> getSvnTree(String userNo, String sysCode){
+        Response<SvnNode> response = new Response<SvnNode>();
+        
+        String key = MessageFormat.format(Constants.CACHE_USER_PWD, userNo);
+        String pwd = (String) cache.get(key);
+        // svn地址
+        String httpUrl = configDao.getSysConfs(sysCode, SysConfType.SVNBRANCH).get(0);
+        if (StringUtils.isEmpty(httpUrl)) {
+            response.setSuccess(false);
+            response.setMsg("没有查询到svn分支地址");
+            
+            return response;
+        }
+        
+        boolean hasAuth = Svnkit.testAuth(httpUrl, userNo, pwd);
+        if (!hasAuth) {
+            response.setSuccess(false);
+            response.setMsg("没有权限");
+            
+            return response;
+        }
+        
+        // 获取节点
+        SvnNode node = Svnkit.getSvnRepository(httpUrl, userNo, pwd,"");
+        response.setObj(node);
+        
+        return response;
+    }
     
     @Override
     @Transactional
@@ -65,7 +97,7 @@ public class CompileServiceImpl implements CompileService {
         compileBo.setVarsPath(configDao.getSysConfs(sysCode, SysConfType.XML).get(0));
         compileBo.setSvnUser(userNo);
         
-        String key = MessageFormat.format(Constants.CACHE_USER_PWD, "");
+        String key = MessageFormat.format(Constants.CACHE_USER_PWD, userNo);
         String pwd = (String) cache.get(key);
         compileBo.setSvnPassword(pwd);
         compileBo.setSystemCode(sysCode);

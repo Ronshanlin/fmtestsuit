@@ -11,4 +11,7 @@ public interface SystemService {
     public Response<String> saveSystem(String sysCode, String sysName);
     
     public void setSysUsrRel(String userNo, String sysCode);
+    
+    public Response<String> updateSvnBranch(String sysCode, String branch);
+    public Response<String> getSvnBranch(String sysCode);
 }

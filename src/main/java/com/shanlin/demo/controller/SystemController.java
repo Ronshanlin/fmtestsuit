@@ -21,10 +21,19 @@ public class SystemController extends BaseController{
     
     @RequestMapping("/list")
     public String list(Model model){
-        
         model.addAttribute("sysList", systemService.getSystems());
-        
         return "system/sys-select.ftl";
+    }
+    
+    @RequestMapping("/svn")
+    public void svn(Model model,HttpServletResponse response, String sysCode){
+        try {
+            Response<String> serviceResponse = systemService.getSvnBranch(sysCode);
+            super.ajaxJson(response, serviceResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            super.ajaxJson(response, "exption:"+e.getMessage());
+        }
     }
     
     @RequestMapping("/add/show")
@@ -61,7 +70,7 @@ public class SystemController extends BaseController{
             }
         } catch (Exception e) {
             e.printStackTrace();
-            ajaxJson(response, "exption"+e.getMessage());
+            ajaxJson(response, "exption:"+e.getMessage());
         }
         
         ajaxJson(response, "success");

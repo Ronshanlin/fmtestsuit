@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.tmatesoft.svn.core.SVNAuthenticationException;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
@@ -18,6 +19,22 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import com.shanlin.demo.bean.SvnNode;
 
 public class Svnkit {
+    
+    public static boolean testAuth(String httpUrl,String username, String passpord){
+        try {
+            SVNRepository repository = getRepository(httpUrl, username, passpord);
+            repository.testConnection();
+        } catch (SVNException e) {
+            if (e instanceof SVNAuthenticationException) {
+                return false;
+            }else {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        
+        return true;
+    }
     
     public static SvnNode getSvnRepository(String httpUrl,String username, String passpord, String path){
         SvnNode node = new SvnNode();

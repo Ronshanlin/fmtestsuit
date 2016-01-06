@@ -27,4 +27,5 @@ public abstract class Constants {
     public static final String CACHE_USER_PWD="user:pwd:{0}";
     
     public static final String LOGIN_URL="/login";
+    public static final String INDEX_URL="/index";
 }

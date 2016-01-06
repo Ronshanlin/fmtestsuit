@@ -14,14 +14,16 @@
         function sumbmit(){
         	$("#form").form('submit',{
         		url:'${sysDomain}/sys/add/do',
-        		onSubmit: function(){
+        		onSubmit: function(param){
+        			console.log(param);
         			var isValid = $(this).form('validate');
 					return isValid;
         		},
         		success:function(data){
         			var result=eval("("+data+")");
         			if(result=="success"){
-        				window.location.href="${sysDomain}/svn/tree";
+        				var sys = $("#sysCode").textbox("getValue");
+        				window.location.href="${sysDomain}/svn/add/show/"+sys;
         			}
         		}
         	});
@@ -31,7 +33,7 @@
 <body>
 <center>
     <div style="margin:200px 0;"></div>
-    <div class="easyui-panel" title="请选择系统" style="width:400px;padding:10px 60px 20px 60px">
+    <div class="easyui-panel" title="添加新系统" style="width:400px;padding:10px 60px 20px 60px">
     	<form id="form" method="post">
 	        <table cellpadding="5">
 	            <tr>
@@ -44,7 +46,7 @@
 	            <tr>
 	                <td>系统编码:</td>
 	                <td>
-	                	<input class="easyui-validatebox easyui-textbox" name="sysCode"
+	                	<input class="easyui-validatebox easyui-textbox" name="sysCode" id="sysCode"
 	                		data-options="required:true,validType:'length[1,10]',missingMessage:'请填系统编码'">
 	                </td>
 	            </tr>
